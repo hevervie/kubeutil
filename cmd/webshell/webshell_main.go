@@ -25,7 +25,7 @@ import (
 
 var (
 	addr = flag.String("addr", ":8090", "http service address")
-	cmd  = []string{"/bin/sh"}
+	cmd  = []string{"/bin/bash"}
 )
 
 func internalError(ws *websocket.Conn, msg string, err error) {
