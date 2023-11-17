@@ -7,20 +7,18 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
-	"net/http"
-	_ "net/http/pprof"
-
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
-	corev1 "k8s.io/api/core/v1"
-
 	_ "github.com/maoqide/kubeutil/initialize"
 	"github.com/maoqide/kubeutil/pkg/kube"
 	kubeLog "github.com/maoqide/kubeutil/pkg/kube/log"
 	terminal "github.com/maoqide/kubeutil/pkg/terminal"
 	wsterminal "github.com/maoqide/kubeutil/pkg/terminal/websocket"
 	"github.com/maoqide/kubeutil/utils"
+	corev1 "k8s.io/api/core/v1"
+	"log"
+	"net/http"
+	_ "net/http/pprof"
 )
 
 var (
@@ -152,14 +150,14 @@ func serveWsLogs(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	router := mux.NewRouter()
-	router.PathPrefix("/debug/pprof/").Handler(http.DefaultServeMux)
+	router.PathPrefix("/webshell/debug/pprof/").Handler(http.DefaultServeMux)
 	// TODO
 	// temporarily use relative path, run by `go run cmd/webshell/webshell_main.go` in project root path.
-	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./frontend/"))))
+	router.PathPrefix("/webshell/static/").Handler(http.StripPrefix("/webshell/static/", http.FileServer(http.Dir("./frontend/"))))
 	// enter webshell by url like: http://127.0.0.1:8090/terminal?namespace=default&pod=nginx-65f9798fbf-jdrgl&container=nginx
-	router.HandleFunc("/terminal", serveTerminal)
-	router.HandleFunc("/ws/{namespace}/{pod}/{container}/webshell", serveWsTerminal)
-	router.HandleFunc("/logs", serveLogs)
-	router.HandleFunc("/ws/{namespace}/{pod}/{container}/logs", serveWsLogs)
+	router.HandleFunc("/webshell/terminal", serveTerminal)
+	router.HandleFunc("/webshell/ws/{namespace}/{pod}/{container}/webshell", serveWsTerminal)
+	router.HandleFunc("/webshell/logs", serveLogs)
+	router.HandleFunc("/webshell/ws/{namespace}/{pod}/{container}/logs", serveWsLogs)
 	log.Fatal(http.ListenAndServe(*addr, router))
 }
